@@ -88,7 +88,7 @@ if submitted:
         })
         perf_metrics = perf_metrics.set_index("Metric")
         percent_metrics = ["Mean Return", "Annualized Return", "Std Dev", "Downside Dev", "Max Drawdown"]
-        perf_metrics["Formatted Value"] = perf_metrics.apply(lambda row: "{:.2%}".format(row["Value"]) if row.name in percent_metrics else "{:.2f}".format(row["Value"]),axis=1)
+        perf_metrics["Formatted Value"] = perf_metrics.apply(lambda row: "{:.2%}".format(row["Value"]) if row.name in percent_metrics else "{:.2}".format(row["Value"]),axis=1)
         st.dataframe(perf_metrics[["Formatted Value"]], use_container_width=True)
 
         annual_returns = (1 + returns).resample('YE').prod() - 1
