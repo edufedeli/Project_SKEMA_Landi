@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
-from scipy.optimize import minimize
+import scipy.optimize as sop
 ##########################################################################
 
 
@@ -137,7 +137,7 @@ if submitted:
             init_guess = np.ones(n) / n
             bounds = [(-1, 1)] * n
             constraints = {'type': 'eq', 'fun': lambda w: np.sum(w) - 1}
-            result = minimize(
+            result = sop.minimize(
                 min_variance,
                 init_guess,
                 args=(cov_matrix,),
@@ -191,7 +191,7 @@ if submitted:
             bounds = [(-1, 1)] * n
             constraints = {'type': 'eq', 'fun': lambda w: np.sum(w) - 1}
 
-            result = minimize(
+            result = sop.minimize(
                 sharpe_opt_no_rf,
                 init_guess,
                 args=(mean_returns, cov_matrix),
@@ -243,7 +243,7 @@ if submitted:
             bounds = [(-1, 1)] * n
             constraints = {'type': 'eq', 'fun': lambda w: np.sum(w) - 1}
 
-            result = minimize(
+            result = sop.minimize(
                 utility_opt,
                 init_guess,
                 args=(mean_returns, cov_matrix),
