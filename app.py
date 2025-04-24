@@ -282,9 +282,7 @@ if submitted:
     Prices.columns = pd.MultiIndex.from_tuples([(price, ticker) for (price, _), ticker in Prices.columns],names=['Price', 'Ticker'])
     Prices = Prices.sort_index(axis=1)
     Prices = Prices.dropna()
-    rename_map = {'ES=F': 'S&P500','BND': 'BUNDS','DX=F': 'USD Index','GC=F': 'GOLD'}
-    Prices.columns = Prices.columns.set_levels(Prices.columns.levels[1].to_series().replace(rename_map).values, level='Ticker')
-
+    
     returns = Prices['Returns']
     cumulative_returns = (1 + returns).cumprod()
     cumulative_returns.columns = pd.MultiIndex.from_product([['Cumulative Returns'], cumulative_returns.columns], names=['Price', 'Ticker'])
@@ -304,9 +302,10 @@ if submitted:
             rolling_corrs[pair_name] = a[t1].rolling(window).corr(a[t2])
     rolling_corrs = pd.DataFrame(rolling_corrs).dropna(how="all")
 
-    port1 = ['BUNDS', 'S&P500']
-    port2 = ['BUNDS', 'S&P500', 'GOLD']
-    port3 = ['BUNDS', 'S&P500', 'GOLD', 'USD Index']
+    port1 = [Tickers[0], Tickers[1]]  
+    port2 = [Tickers[1], Tickers[0], Tickers[2]]  
+    port3 = [Tickers[1], Tickers[0], Tickers[2], Tickers[3]]  
+
 
     pa = Prices['Returns'][port1]
     pb = Prices['Returns'][port2]
@@ -334,9 +333,9 @@ if submitted:
             'Risk Parity': optimize_risk_parity_dynamic(pk, window, shift_days)[1],
         }, axis=1, names=['Strategy'])
     ], axis=1, keys=[
-        'BUNDS + S&P500',
-        'BUNDS + S&P500 + GOLD',
-        'BUNDS + S&P500 + GOLD + USD Index'
+        " + ".join(port1),
+        " + ".join(port2),
+        " + ".join(port3)
     ], names=['Portfolio'])
     optimized_strategies_ret = optimized_strategies_ret.dropna(how='any')
 
@@ -362,9 +361,9 @@ if submitted:
             'Risk Parity': optimize_risk_parity_dynamic(pk, window, shift_days)[0],
         }, axis=1, names=['Strategy'])
     ], axis=1, keys=[
-        'BUNDS + S&P500',
-        'BUNDS + S&P500 + GOLD',
-        'BUNDS + S&P500 + GOLD + USD Index'
+        " + ".join(port1),
+        " + ".join(port2),
+        " + ".join(port3)
     ], names=['Portfolio'])
     optimized_strategies_cum_ret = optimized_strategies_cum_ret.dropna(how='any')
 
