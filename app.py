@@ -10,7 +10,7 @@ import scipy.optimize as sop
 
 
 ######################## INPUT ########################
-Tickers = ["MSFT", "GOOGL", "META","TSLA"]
+Tickers = ["ES=F", "BND", "GC=F","DX=F"]
 start_date = "1990-01-01"
 end_date = "2025-04-16"
 window = 252
