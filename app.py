@@ -312,46 +312,46 @@ if submitted:
     pk = Prices['Returns'][port3]
 
     ret_sharpe_pa = optimize_monthly_sharpe(pa)
-ret_utility_pa = optimize_monthly_utility(pa)
-ret_minvar_pa = optimize_monthly_minvar(pa)
-ret_risk_pa = optimize_risk_parity_dynamic(pa, window, shift_days)
-
-ret_sharpe_pb = optimize_monthly_sharpe(pb)
-ret_utility_pb = optimize_monthly_utility(pb)
-ret_minvar_pb = optimize_monthly_minvar(pb)
-ret_risk_pb = optimize_risk_parity_dynamic(pb, window, shift_days)
-
-ret_sharpe_pk = optimize_monthly_sharpe(pk)
-ret_utility_pk = optimize_monthly_utility(pk)
-ret_minvar_pk = optimize_monthly_minvar(pk)
-ret_risk_pk = optimize_risk_parity_dynamic(pk, window, shift_days)
-
-optimized_strategies_ret = pd.concat([
-    pd.concat({
-        'Max Sharpe': ret_sharpe_pa[1],
-        'Max Utility': ret_utility_pa[1],
-        'Min Variance': ret_minvar_pa[1],
-        'Risk Parity': ret_risk_pa[1],
-    }, axis=1, names=['Strategy']),
-
-    pd.concat({
-        'Max Sharpe': ret_sharpe_pb[1],
-        'Max Utility': ret_utility_pb[1],
-        'Min Variance': ret_minvar_pb[1],
-        'Risk Parity': ret_risk_pb[1],
-    }, axis=1, names=['Strategy']),
-
-    pd.concat({
-        'Max Sharpe': ret_sharpe_pk[1],
-        'Max Utility': ret_utility_pk[1],
-        'Min Variance': ret_minvar_pk[1],
-        'Risk Parity': ret_risk_pk[1],
-    }, axis=1, names=['Strategy'])
-], axis=1, keys=[
-    " + ".join(port1),
-    " + ".join(port2),
-    " + ".join(port3)
-], names=['Portfolio'])
+    ret_utility_pa = optimize_monthly_utility(pa)
+    ret_minvar_pa = optimize_monthly_minvar(pa)
+    ret_risk_pa = optimize_risk_parity_dynamic(pa, window, shift_days)
+    
+    ret_sharpe_pb = optimize_monthly_sharpe(pb)
+    ret_utility_pb = optimize_monthly_utility(pb)
+    ret_minvar_pb = optimize_monthly_minvar(pb)
+    ret_risk_pb = optimize_risk_parity_dynamic(pb, window, shift_days)
+    
+    ret_sharpe_pk = optimize_monthly_sharpe(pk)
+    ret_utility_pk = optimize_monthly_utility(pk)
+    ret_minvar_pk = optimize_monthly_minvar(pk)
+    ret_risk_pk = optimize_risk_parity_dynamic(pk, window, shift_days)
+    
+    optimized_strategies_ret = pd.concat([
+        pd.concat({
+            'Max Sharpe': ret_sharpe_pa[1],
+            'Max Utility': ret_utility_pa[1],
+            'Min Variance': ret_minvar_pa[1],
+            'Risk Parity': ret_risk_pa[1],
+        }, axis=1, names=['Strategy']),
+    
+        pd.concat({
+            'Max Sharpe': ret_sharpe_pb[1],
+            'Max Utility': ret_utility_pb[1],
+            'Min Variance': ret_minvar_pb[1],
+            'Risk Parity': ret_risk_pb[1],
+        }, axis=1, names=['Strategy']),
+    
+        pd.concat({
+            'Max Sharpe': ret_sharpe_pk[1],
+            'Max Utility': ret_utility_pk[1],
+            'Min Variance': ret_minvar_pk[1],
+            'Risk Parity': ret_risk_pk[1],
+        }, axis=1, names=['Strategy'])
+    ], axis=1, keys=[
+        " + ".join(port1),
+        " + ".join(port2),
+        " + ".join(port3)
+    ], names=['Portfolio'])
 
     optimized_strategies_cum_ret = pd.concat([
     pd.concat({
