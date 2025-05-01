@@ -46,6 +46,9 @@ if submitted:
 
     def get_data(ticker, start, end, interval='1D'):
         data = yf.download(ticker, start=start, end=end, interval=interval, auto_adjust=True)
+        if data.empty:
+            st.error(f"❌ Errore: il download dei dati per {ticker} ha restituito un DataFrame vuoto. Controlla il ticker o il limite di richieste.")
+            st.stop()
         data = data.ffill().dropna()
         data['Returns'] = data['Close'].pct_change()
         data = data.dropna()
