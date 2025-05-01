@@ -6,13 +6,14 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
 import scipy.optimize as sop
+
 ##########################################################################
 
 
 ######################## INPUT ########################
-Tickers = ["ES=F", "BND", "GC=F","DX=F"]
+Tickers = ["ES=F", "BND", "GC=F", "DX=F"]
 start_date = "1990-01-01"
-end_date = "2025-04-16"
+end_date = "2025-04-30"
 window = 252
 shift_days = 2
 #######################################################
@@ -26,8 +27,8 @@ with st.form(key="params_form"):
     st.subheader("Input for the analysis:")
     col1, col2 = st.columns(2)
     with col1:
-        Asset1_ticker = st.text_input("Ticker Asset 1", value= Tickers[0])
-        Asset3_ticker = st.text_input("Ticker Asset 3", value= Tickers[2])
+        Asset1_ticker = st.text_input("Ticker Asset 1", value=Tickers[0])
+        Asset3_ticker = st.text_input("Ticker Asset 3", value=Tickers[2])
         start_date = st.date_input("Start Date", pd.to_datetime(start_date))
         window = st.number_input("Rolling Window", value=window)
     with col2:
@@ -41,6 +42,7 @@ with st.form(key="params_form"):
 if submitted:
     st.write("""---""")
     st.write("Loading data...")
+
 
     def get_data(ticker, start, end, interval='1D'):
         data = yf.download(ticker, start=start, end=end, interval=interval, auto_adjust=True)
@@ -88,7 +90,9 @@ if submitted:
         })
         perf_metrics = perf_metrics.set_index("Metric")
         percent_metrics = ["Mean Return", "Annualized Return", "Std Dev", "Downside Dev", "Max Drawdown"]
-        perf_metrics["Formatted Value"] = perf_metrics.apply(lambda row: "{:.2%}".format(row["Value"]) if row.name in percent_metrics else "{:.2}".format(row["Value"]),axis=1)
+        perf_metrics["Formatted Value"] = perf_metrics.apply(
+            lambda row: "{:.2%}".format(row["Value"]) if row.name in percent_metrics else "{:.2}".format(row["Value"]),
+            axis=1)
         st.dataframe(perf_metrics[["Formatted Value"]], use_container_width=True)
 
         annual_returns = (1 + returns).resample('YE').prod() - 1
@@ -124,6 +128,7 @@ if submitted:
         plt.ylabel('Year')
         plt.xlabel('Month')
 
+
     def optimize_monthly_minvar(pk_returns: pd.DataFrame):
         def min_variance(weights, cov_matrix):
             return np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))
@@ -158,10 +163,11 @@ if submitted:
             except KeyError:
                 continue
         if len(optimized_returns) == 0:
-            return pd.Series(dtype=float), pd.Series(dtype=float)
+            return pd.Series(dtype=float)
         minvar_returns_df = pd.concat(optimized_returns).sort_index()
         minvar_cum_returns = (1 + minvar_returns_df).cumprod()
         return minvar_cum_returns, minvar_returns_df
+
 
     def optimize_risk_parity_dynamic(pk_returns: pd.DataFrame, window=window, shift_days=shift_days):
         rolling_vol = pk_returns.rolling(window).std()
@@ -171,6 +177,7 @@ if submitted:
         weights_returns = (weights * pk_returns).sum(axis=1)
         weights_cum_returns = (1 + weights_returns).cumprod()
         return weights_cum_returns, weights_returns
+
 
     def optimize_monthly_sharpe(pk_returns: pd.DataFrame):
         def sharpe_opt_no_rf(weights, mean_returns, cov_matrix):
@@ -217,11 +224,12 @@ if submitted:
                 continue
 
         if len(optimized_returns) == 0:
-            return pd.Series(dtype=float), pd.Series(dtype=float)
+            return pd.Series(dtype=float)
 
         optimized_returns_df = pd.concat(optimized_returns).sort_index()
         optimized_cum_returns = (1 + optimized_returns_df).cumprod()
         return optimized_cum_returns, optimized_returns_df
+
 
     def optimize_monthly_utility(pk_returns: pd.DataFrame):
         def utility_opt(weights, mean_returns, cov_matrix):
@@ -269,23 +277,26 @@ if submitted:
                 continue
 
         if len(optimized_returns) == 0:
-            return pd.Series(dtype=float), pd.Series(dtype=float)
+            return pd.Series(dtype=float)
 
         optimized_utility_df = pd.concat(optimized_returns).sort_index()
         optimized_utility_cum = (1 + optimized_utility_df).cumprod()
         return optimized_utility_cum, optimized_utility_df
 
+
     Prices = {}
     for ticker in Tickers:
         Prices[ticker] = get_data(ticker, start_date, end_date)
     Prices = pd.concat(Prices.values(), axis=1)
-    Prices.columns = pd.MultiIndex.from_tuples([(price, ticker) for (price, _), ticker in Prices.columns],names=['Price', 'Ticker'])
+    Prices.columns = pd.MultiIndex.from_tuples([(price, ticker) for (price, _), ticker in Prices.columns],
+                                               names=['Price', 'Ticker'])
     Prices = Prices.sort_index(axis=1)
     Prices = Prices.dropna()
-    
+
     returns = Prices['Returns']
     cumulative_returns = (1 + returns).cumprod()
-    cumulative_returns.columns = pd.MultiIndex.from_product([['Cumulative Returns'], cumulative_returns.columns], names=['Price', 'Ticker'])
+    cumulative_returns.columns = pd.MultiIndex.from_product([['Cumulative Returns'], cumulative_returns.columns],
+                                                            names=['Price', 'Ticker'])
     Prices = pd.concat([Prices, cumulative_returns], axis=1)
     Prices = Prices.sort_index(axis=1)
 
@@ -302,10 +313,9 @@ if submitted:
             rolling_corrs[pair_name] = a[t1].rolling(window).corr(a[t2])
     rolling_corrs = pd.DataFrame(rolling_corrs).dropna(how="all")
 
-    port1 = [Tickers[0], Tickers[1]]  
-    port2 = [Tickers[1], Tickers[0], Tickers[2]]  
-    port3 = [Tickers[1], Tickers[0], Tickers[2], Tickers[3]]  
-
+    port1 = [Tickers[0], Tickers[1]]
+    port2 = [Tickers[1], Tickers[0], Tickers[2]]
+    port3 = [Tickers[1], Tickers[0], Tickers[2], Tickers[3]]
 
     pa = Prices['Returns'][port1]
     pb = Prices['Returns'][port2]
