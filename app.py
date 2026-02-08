@@ -23,6 +23,14 @@ shift_days = 2
 st.set_page_config(page_title="Portfolio", layout="wide")
 st.title("Portfolio Metrics and Allocation")
 
+n_assets = st.number_input(
+    "Number of assets",
+    min_value=2,
+    max_value=30,
+    value=len(Tickers),
+    step=1
+)
+
 with st.form(key="params_form"):
     st.subheader("Input for the analysis:")
 
@@ -30,8 +38,7 @@ with st.form(key="params_form"):
     with col1:
         start_date = st.date_input("Start Date", pd.to_datetime(start_date))
         window = st.number_input("Rolling Window", value=int(window), step=1)
-        n_assets = st.number_input("Number of assets", min_value=2, max_value=30,
-                                   value=len(Tickers), step=1)
+        
     with col2:
         end_date = st.date_input("End Date", pd.to_datetime(end_date))
         shift_days = st.number_input("Shift Days", value=int(shift_days), step=1)
