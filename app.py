@@ -25,24 +25,35 @@ st.title("Portfolio Metrics and Allocation")
 
 with st.form(key="params_form"):
     st.subheader("Input for the analysis:")
+
     col1, col2 = st.columns(2)
     with col1:
-        Asset1_ticker = st.text_input("Ticker Asset 1", value=Tickers[0])
-        Asset3_ticker = st.text_input("Ticker Asset 3", value=Tickers[2])
         start_date = st.date_input("Start Date", pd.to_datetime(start_date))
-        window = st.number_input("Rolling Window", value=window)
+        window = st.number_input("Rolling Window", value=int(window), step=1)
+        n_assets = st.number_input("Number of assets", min_value=2, max_value=30,
+                                   value=len(Tickers), step=1)
     with col2:
-        Asset2_ticker = st.text_input("Ticker Asset 2", value=Tickers[1])
-        Asset4_ticker = st.text_input("Ticker Asset 4", value=Tickers[3])
         end_date = st.date_input("End Date", pd.to_datetime(end_date))
-        shift_days = st.number_input("Shift Days", value=shift_days)
+        shift_days = st.number_input("Shift Days", value=int(shift_days), step=1)
+
+    st.markdown("### Tickers")
+    ticker_inputs = []
+    for i in range(int(n_assets)):
+        default_val = Tickers[i] if i < len(Tickers) else ""
+        ticker_inputs.append(
+            st.text_input(f"Ticker {i+1}", value=default_val, key=f"ticker_{i}")
+        )
 
     submitted = st.form_submit_button("Analyze")
 
 if submitted:
+    Tickers = [t.strip() for t in ticker_inputs if t.strip() != ""]
+    if len(Tickers) < 2:
+        st.error("Please enter at least 2 valid tickers.")
+        st.stop()
+
     st.write("""---""")
     st.write("Loading data...")
-
 
     def get_data(ticker, start, end, interval='1D'):
         data = yf.download(ticker, start=start, end=end, interval=interval, auto_adjust=True)
