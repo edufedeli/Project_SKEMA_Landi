@@ -144,7 +144,7 @@ if submitted:
             cov_matrix = group.cov()
             n = cov_matrix.shape[0]
             init_guess = np.ones(n) / n
-            bounds = [(-1, 1)] * n
+            bounds = [(0, 1)] * n
             constraints = {'type': 'eq', 'fun': lambda w: np.sum(w) - 1}
             result = sop.minimize(
                 min_variance,
@@ -199,7 +199,7 @@ if submitted:
             cov_matrix = group.cov()
             n = len(mean_returns)
             init_guess = np.ones(n) / n
-            bounds = [(-1, 1)] * n
+            bounds = [(0, 1)] * n
             constraints = {'type': 'eq', 'fun': lambda w: np.sum(w) - 1}
 
             result = sop.minimize(
@@ -252,7 +252,7 @@ if submitted:
             cov_matrix = group.cov()
             n = len(mean_returns)
             init_guess = np.ones(n) / n
-            bounds = [(-1, 1)] * n
+            bounds = [(0, 1)] * n
             constraints = {'type': 'eq', 'fun': lambda w: np.sum(w) - 1}
 
             result = sop.minimize(
